@@ -25,7 +25,7 @@ write_db_setting(connection_name=connection_name
 
 
 conn = get_redshift_dw_conn()
-df  = sql_to_pandas("select * from common.retention_orders limit 1")
-print(df)
+df  = sql_to_pandas("select * from common.retention_orders limit 1").to_json(orient="split")
+print(type(df))
 
 

@@ -3,9 +3,12 @@
 /*
         Sales Pitch:
 
-                We want to be our customer's one-stop-shop for pet care needs. We can't do this if our customers are seeing eats, classic, sc, bright,.. as different destinations. After all, the average customer our only converses with us **5-6** times during our relationship. Spread that across product lines and we're more like one-of-many shops for their needs.
+                We want to be our customer's one-stop-shop for pet care needs. We can't do this if our customers are seeing various
+                product lines as different destinations. After all, the average customer our only converses with us **5-6** times 
+                during our relationship. Spread that across product lines and we're suddenly a small part of their needs.
 
-                However, if we share experiences across product lines, we'll get more of these fantastic opportunities to impress our customers and keep them coming back.
+                However, if we share every experience across product lines, we'll capitalize on these rar to impress our 
+                customers and keep them coming back.
 
                 This project is about leveraging each moment to its full potential and unifying the customer experience. For every major event that happens in our relationship.
                 
@@ -99,17 +102,31 @@ CREATE TABLE collinw.PilotDim (
 
 /** Current Tables **/
 
+
 CREATE TABLE collinw.current_treatments (--One row per treatment, product, source system and variant quadrupple. kept simple as it is 'exposed' 
         current_treatment_id int IDENTITY(1,1),         -- Primary key
-        treatment_Id int not NULL,                      -- Foreign key to dim_treatments and treatment_details
+        treatment_code int not NULL,                      -- Foreign key to dim_treatments and treatment_details
         product varchar(255) not null,                  -- One per row, potentially 'All'
         source_system varchar(255) not null,            -- One per row, potentially 'All'
         variant varchar(255) not null,                  -- One per row. 1, 0 for test and control, 2,3.... for multi-variant tests
+        treatment_text varchar(255) not null,           -- The text specific to this row *with inputs inserted*
+        treatment_title varchar(255) not null,          -- The title specific to this row *with inputs inserted*
         id int not null,                                -- The customer, user, subscription ... the treatment applies to
         id_type varchar(255) not null,                  -- The type of the above id
         insert_dt_utc datetime  DEFAULT GETDATE()       -- Self explanatory
 );
 /*DROP TABLE  collinw.current_treatments  */
+
+CREATE TABLE collinw.historical_treatments (--One row per treatment, product, source system and variant quadrupple. kept simple as it is 'exposed' 
+        historical_treatment_id int IDENTITY(1,1),         -- Primary key
+        variant varchar(255) not null,                  -- One per row. 1, 0 for test and control, 2,3.... for multi-variant tests
+        id int not null,                                -- The customer, user, subscription ... the treatment applies to
+        id_type varchar(255) not null,                  -- The type of the above id
+        start_dt_utc datetime  DEFAULT GETDATE(),       -- Cut for time, date when treatment first applied 
+        end_dt_utc datetime  DEFAULT GETDATE(),         -- Cut for time, date when treatment last applied 
+        insert_dt_utc datetime  DEFAULT GETDATE()       -- Self explanatory
+);
+/* DROP TABLE  collinw.historical_treatments  */
 
 CREATE TABLE collinw.dim_treatments ( -- At a treatment level granularily, variant stored in treatment_varient
         treatment_id int IDENTITY(1,1),                         -- Primary key
@@ -343,8 +360,3 @@ INSERT INTO collinw.current_treatments (
         ,id                            
         ,id_type                       
 );
-SELECT 
-
-treatment_recentContact
-treatment_dunningWarning
-treatment_dogBirthday

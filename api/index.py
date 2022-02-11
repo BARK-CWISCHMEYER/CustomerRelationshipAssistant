@@ -1,7 +1,10 @@
 #https://auth0.com/blog/developing-restful-apis-with-python-and-flask/
 from barkutils.sql.sql_conns import get_redshift_dw_conn, sql_to_pandas
-
+from sql_queries import *
 from flask import Flask, jsonify, request
+
+#from .models.entity import Session, engine, Base
+#from .models.treatment import Treatment
 
 app = Flask(__name__)
 
@@ -38,10 +41,18 @@ treatments = [
   } 
 ]
 
+#Gets treatments given the input
 
-@app.route('/treatments')
-def get_treatments():
+@app.route('/treatments', defaults-{'id': 0 , 'id_type': 'customer' , 'product': 'All' , 'source_system': 'All'}) ## need to validate inputs for id <> 0 unless this
+@app.route('/treatments/<id>/<id_type>', defaults-{'product': 'All' , 'source_system': 'All'})
+@app.route('/treatments/<id>/<id_type>/<source_system>', defaults-{'product': 'All'})
+@app.route('/treatments/<id>/<id_type>/<source_system>/<product>')
+def get_treatments(product,source_system, id, id_type):
+  if(id==0):
+    df  = sql_to_pandas("select * from common.retention_orders limit 1").to_json(orient="split")
   return jsonify(treatments)
+
+
 
 
 @app.route('/treatments', methods=['POST'])
@@ -49,10 +60,8 @@ def add_treatment():
   treatments.append(request.get_json())
   return '', 204
 
-
-@app.route('/sql')
+@app.route('/sqltest')
 def get_sql():
-  conn = get_redshift_dw_conn()
-  df  = sql_to_pandas("select * from common.retention_orders limit 1").to_json(orient="split")
-  return df
+  df  = sql_to_pandas("select subscription_id from common.retention_orders limit 1").to_json(orient="split")
 
+  return df

@@ -1,7 +1,8 @@
 #https://auth0.com/blog/developing-restful-apis-with-python-and-flask/
-from barkutils.sql.sql_conns import get_redshift_dw_conn, sql_to_pandas
 
 from flask_cors import CORS
+from barkutils.sql.sql_conns import get_redshift_dw_conn, sql_to_pandas
+
 
 #from sql.sql_queries import *
 
@@ -11,7 +12,7 @@ from flask import Flask, jsonify, request
 #from .models.treatment import Treatment
 
 app = Flask(__name__)
-CORS(app)
+
 # @app.route("/")
 # def hello_world():
 #   return "Hello, World!"

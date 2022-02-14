@@ -20,14 +20,14 @@ class Treatment(Entity, Base):
     def __init__(self, treatment_code, product, source_system, variant,
                      _id, id_type, treatment_text, treatment_title, created_by ):
         Entity.__init__(self, created_by)
-        self.treatment_code = treatment_id
-        self.product = product
-        self.source_system = source_system
-        self.variant = variant
-        self._id = _id
-        self.id_type = id_type
-        self.treatment_text = treatment_text
-        self.treatment_title = treatment_title
+        self.treatment_code     = treatment_id
+        self.product            = product
+        self.source_system      = source_system
+        self.variant            = variant
+        self._id                = _id
+        self.id_type            = id_type
+        self.treatment_text     = treatment_text
+        self.treatment_title    = treatment_title
       
     def __repr__(self):
         return '<Treatment(name={self.description!r})>'.format(self=self) 

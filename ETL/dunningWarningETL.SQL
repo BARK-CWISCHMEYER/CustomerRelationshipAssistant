@@ -21,7 +21,7 @@
 /********   Dev pull, need card exp data                          *******/
 /********   ********   ********   ********   ********   ********   ********   ********/
 
-
+BEGIN Try
 INSERT INTO collinw.treatment_dunningWarning (              
         subscription_id ,                
         product ,  
@@ -47,6 +47,19 @@ where datediff('day',subscription_expires_at,GETDATE()) :: int < 60
 limit 10  --in prod this would pull all of these folks of course, but here we limit in interest of quey run times 
             -- Used to flex treatment text 
    
+
+   
+END TRY  
+BEGIN CATCH  
+      EXECUTE   
+        SELECT  
+    ERROR_NUMBER() AS ErrorNumber  
+    ,ERROR_SEVERITY() AS ErrorSeverity  
+    ,ERROR_STATE() AS ErrorState  
+    ,ERROR_PROCEDURE() AS ErrorProcedure  
+    ,ERROR_LINE() AS ErrorLine  
+    ,ERROR_MESSAGE() AS ErrorMessage;  
+END CATCH 
 
 /*Getting some with an overlap for test cases */
 /*

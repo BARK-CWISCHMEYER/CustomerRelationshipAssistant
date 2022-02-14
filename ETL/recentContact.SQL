@@ -25,7 +25,7 @@
 
 /*TRUNCATE TABLE collinw.treatment_recentContact */
 /*SELECT * FROM collinw.treatment_recentContact */
-
+BEGIN Try
 
 INSERT INTO collinw.treatment_recentContact (              
         user_id ,                
@@ -65,6 +65,18 @@ where datediff('day' ,date_intervention_applied_et, GETDATE())<50
 ) a
 limit 10--in prod this would pull all of these folks of course, but here we limit in interest of quey run times 
 
+
+END TRY  
+BEGIN CATCH  
+      EXECUTE   
+        SELECT  
+    ERROR_NUMBER() AS ErrorNumber  
+    ,ERROR_SEVERITY() AS ErrorSeverity  
+    ,ERROR_STATE() AS ErrorState  
+    ,ERROR_PROCEDURE() AS ErrorProcedure  
+    ,ERROR_LINE() AS ErrorLine  
+    ,ERROR_MESSAGE() AS ErrorMessage;  
+END CATCH 
 
 
 /*

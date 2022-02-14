@@ -24,7 +24,8 @@
 /********   ********   ********   ********   ********   ********   ********   ********/
 /********   Dev pull, need to filer on age                          *******/
 /********   ********   ********   ********   ********   ********   ********   ********/
-
+D
+BEGIN TRY  
 
 INSERT INTO collinw.treatment_dogBirthday (              
         dog_id ,                
@@ -32,12 +33,12 @@ INSERT INTO collinw.treatment_dogBirthday (
         variant ,    
         current ,      
         days_till_birthday,
-        curr_age,
+        birthday_num,
         dog_name
         )  
 /*A random set of ten */
 
-SELECT dog_age
+SELECT dog_id
         ,product_line
         ,CASE 
             WHEN RAND()<.33 THEN 0 
@@ -46,65 +47,28 @@ SELECT dog_age
         END as variant 
         ,1
         ,datediff('day' ,date_add('day', ISNULL(dog_birthday_day,1), date_add('month', ISNULL(dog_birthday_month,1),CAST(ISNULL(dog_birthday_year,2020) ::varchar(10)|| '01' || '01' as date) )) , GETDATE()) 
-        ,dog_age
+        ,CASE WHEN MOD(dog_age,10) = 1 then dog_age    ::varchar(10) + 'st' 
+                WHEN  MOD(dog_age,10) = 2 then dog_Age ::varchar(10)+ 'nd'
+                WHEN  MOD(dog_age,10) = 3 then dog_Age ::varchar(10)+ 'rd'
+              ELSE  dog_Age ::varchar(10) + 'th'
+              end as dog_Age
         ,dog_name
 FROM common.onebark_subscriptions 
 where --datediff('day' ,date_add('day', ISNULL(dog_birthday_day,1), date_add('month', ISNULL(dog_birthday_month,1),CAST(ISNULL(dog_birthday_year,2020) ::varchar(10)|| '01' || '01' as date) )) , GETDATE()) <30 and 
-         dog_birthday_year  > 2000 and  dog_birthday_year<2022
+         dog_birthday_year  > 2000 and  dog_birthday_year<2022 and dog_id is not null
 ORDER BY 5 asc
 limit 10
 
+END TRY  
+BEGIN CATCH  
+      EXECUTE   
+        SELECT  
+    ERROR_NUMBER() AS ErrorNumber  
+    ,ERROR_SEVERITY() AS ErrorSeverity  
+    ,ERROR_STATE() AS ErrorState  
+    ,ERROR_PROCEDURE() AS ErrorProcedure  
+    ,ERROR_LINE() AS ErrorLine  
+    ,ERROR_MESSAGE() AS ErrorMessage;  
+END CATCH 
+
 --in prod this would pull all of these folks of course, but here we limit in interest of quey run times 
-
-/*Getting some with an overlap for test cases */
-/*
-
-SELECT a.box_user_id
-        ,'eats'
-        ,CASE 
-            WHEN RAND()<.5 THEN 0 
-            ELSE 1 
-        END as variant 
-        ,1
-        , 53 + (10 - (10 *RAND()) )
-FROM common.onebark_customers a
-        LEFT JOIN 
-where(total_active_classic_subscriptions+total_active_bright_subscriptions + total_active_superchewer_subscriptions ) > 1
-        and  is_ever_eats::int = 0
-
-limit 5--in prod this would pull all of these folks of course, but here we limit in interest of quey run times 
-
-
-UNION 
-
-SELECT a.box_user_id
-        ,'eats'
-        ,CASE 
-            WHEN RAND()<.5 THEN 0 
-            ELSE 1 
-        END as variant 
-        ,1
-        , 53 + (10 - (10 *RAND()) )
-FROM common.onebark_customers a
-where(total_active_classic_subscriptions+total_active_bright_subscriptions + total_active_superchewer_subscriptions ) > 1
-        and  is_ever_eats::int = 0
-
-limit 5--in prod this would pull all of these folks of course, but here we limit in interest of quey run times 
-
-UNION 
-
-SELECT a.box_user_id
-        ,'eats'
-        ,CASE 
-            WHEN RAND()<.5 THEN 0 
-            ELSE 1 
-        END as variant 
-        ,1
-        , 53 + (10 - (10 *RAND()) )
-FROM common.onebark_customers a
-where(total_active_classic_subscriptions+total_active_bright_subscriptions + total_active_superchewer_subscriptions ) > 1
-        and  is_ever_eats::int = 0
-
-limit 5--in prod this would pull all of these folks of course, but here we limit in interest of quey run times 
-)
-*/

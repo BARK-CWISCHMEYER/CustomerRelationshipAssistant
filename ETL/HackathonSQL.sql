@@ -102,19 +102,33 @@ CREATE TABLE collinw.PilotDim (
 
 /** Current Tables **/
 
+CREATE TABLE collinw.load_log ( -- A template for what should be included in each treatment table 
+        load_log_id     int IDENTITY(1,1),                 
+        source_table    varchar(255) not null,                 
+        dest_table      varchar(255) not null,             
+        successful      boolean DEFAULT 1,                  
+        load_dt_utd     datetime DEFAULT GETDATE(),
+        ErrorNumber     varchar(255) not null,      
+        ErrorSeverity   varchar(255) not null,       
+        ErrorState      varchar(255) not null,      
+        ErrorProcedure  varchar(255) not null,      
+        ErrorLine       varchar(255) not null,      
+        ErrorMessage    varchar(255) not null       
+);
+/*DROP TABLE  collinw.load_log  */
 
 CREATE TABLE collinw.current_treatments (--One row per treatment, product, source system and variant quadrupple. kept simple as it is 'exposed' 
         current_treatment_id int IDENTITY(1,1),         -- Primary key
-        treatment_code int not NULL,                      -- Foreign key to dim_treatments and treatment_details
-        product varchar(255) not null,                  -- One per row, potentially 'All'
-        source_system varchar(255) not null,            -- One per row, potentially 'All'
+        treatment_code varchar(6) not NULL,                      -- Foreign key to dim_treatments and treatment_details
+        product varchar(255) not null,                  -- One per row, potentially 
+        source_system varchar(255) not null,            -- One per row, potentially 
         variant varchar(255) not null,                  -- One per row. 1, 0 for test and control, 2,3.... for multi-variant tests
         treatment_text varchar(255) not null,           -- The text specific to this row *with inputs inserted*
         treatment_title varchar(255) not null,          -- The title specific to this row *with inputs inserted*
         id int not null,                                -- The customer, user, subscription ... the treatment applies to
         id_type varchar(255) not null,                  -- The type of the above id
         insert_dt_utc datetime  DEFAULT GETDATE()       -- Self explanatory
-);
+) sortkey("id");
 /*DROP TABLE  collinw.current_treatments  */
 
 CREATE TABLE collinw.historical_treatments (--One row per treatment, product, source system and variant quadrupple. kept simple as it is 'exposed' 
@@ -143,8 +157,7 @@ CREATE TABLE collinw.dim_treatments ( -- At a treatment level granularily, varia
 /*DROP TABLE  collinw.dim_treatments  */
 
 CREATE TABLE collinw.treatment_details (-- Each treatment having as many as one row per source system, product, and variant, as little as 1
-        treatment_detail_id int IDENTITY(1,1),          -- Primary key
-        treatment_id int not null,                      -- Foreign key to dim_treatments 
+        treatment_detail_id int IDENTITY(1,1),          -- Primary key 
         source_systems varchar(255) not null,           -- One row may have multiple. alphabetical, pipe delimiated (Ruby|MoblieApp|Admin|...)
         product varchar(255) not null,                  -- One row may have multiple. alphabetical, pipe delimiated (Eats|Classic|...)
         treatment_code varchar(10) not NULL UNIQUE,     -- 3-4 letters represnting the treatment (EXS, PXS, DBS ...)
@@ -200,7 +213,7 @@ CREATE TABLE collinw.treatment_dogBirthday (            -- dog level example
         current boolean DEFAULT 1,                      -- These tables should not be changed. Current defaults to 1 and changes when a new row replaces an old one 
        
         days_till_birthday numeric(10,2),               -- Used to flex treatment text 
-        curr_age int,               -- Used to flex treatment text 
+        birthday_num varchar(255),               -- Used to flex treatment text 
         dog_name  varchar(255),               -- Used to flex treatment text 
         --product_suggestion varchar(255) Not NULL,     -- Example of possible improvements
             
@@ -226,7 +239,7 @@ CREATE TABLE collinw.treatment_recentContact ( --Subscription level example
 );
 /*DROP TABLE  collinw.treatment_recentContact  */
 
-
+/*truncate table collinw.dim_treatments*/
 /*Inserting data*/
 INSERT INTO  collinw.dim_treatments ( -- At a treatment level granularily, variant stored in treatment_varient
         products                        
@@ -249,7 +262,7 @@ VALUES
         ,2                   
         ,'treatment_recentContact'       
 ),( 
-      'All'                        
+       'bright|classic|sc|eats'                        
         ,'DBR'       
         ,'Dog Birthday Reminder'   
         ,'To let consultants and customers know that a dog has a birthday coming up'        
@@ -266,11 +279,13 @@ VALUES
         ,1                    
         ,'treatment_dunningWarning'       
 )
-/* DROP TABLE  collinw.dim_treatments  */
+/* truncate TABLE  collinw.dim_treatments  */
 /* SELECT * FROM collinw.dim_treatments  */
 
-INSERT INTO collinw.treatment_details (treatment_id 
-        ,source_systems  -- Admin|BarkPost|BarkRails|CRA|EatsRails|MLPE|MNA|Other|Simon|VWO|ZenDesk
+/* truncate TABLE  collinw.treatment_details  */
+
+INSERT INTO collinw.treatment_details (
+        source_systems  -- Admin|BarkPost|BarkRails|CRA|EatsRails|MLPE|MNA|Other|Simon|VWO|ZenDesk
         ,product 
         ,treatment_code 
         ,variants
@@ -282,8 +297,7 @@ INSERT INTO collinw.treatment_details (treatment_id
 /* Notice that this represents a bark *experience*, bringing our interation to all areas of the business
         */
 VALUES /*customer vaiant*/
-        (1 
-        ,'BarkPost|BarkRails|MLPE|EatsRails|MNA|Simon|VWO' 
+        ('BarkPost|BarkRails|MLPE|EatsRails|MNA|Simon|VWO' 
         ,'bright|classic|sc|eats'  
         ,'RHC' 
         ,'2'
@@ -292,8 +306,7 @@ VALUES /*customer vaiant*/
         ,'Recent Customer Service interaction'            
         ,''       )
                 ,
-        (1 
-        ,'Admin|CRA|ZenDesk|MLPE' 
+        ('Admin|CRA|ZenDesk|MLPE' 
         ,'bright|classic|sc|eats'  
         ,'RHC' 
         ,'0|1'
@@ -302,46 +315,41 @@ VALUES /*customer vaiant*/
         ,'Recent Customer interaction'          
         ,''       )
 /*We can use this data structucture to test out different approaches to messaging - do we just interact, or do we upsell?*/
-, (2 
-        ,'BarkPost|BarkRails|EatsRails|MLPE|MNA|Simon|VWO'
-        ,'All' 
+        ,('BarkPost|BarkRails|EatsRails|MLPE|MNA|Simon|VWO'
+        ,'bright|classic|sc|eats' 
         ,'DBR' 
         ,'0|1'
         ,'Looks like {0} has a birthday coming up, wish him a happy {1} for us!'           
-        ,'dog_name|dog_age'    
+        ,'dog_name|curr_age'    
         ,'{0}''s Birthday'          
         ,  'dog_name'      )
-        ,(2 
-        ,'BarkPost|BarkRails|EatsRails|MLPE|MNA|Simon|VWO'
-        ,'All' 
+        ,('BarkPost|BarkRails|EatsRails|MLPE|MNA|Simon|VWO'
+        ,'bright|classic|sc|eats' 
         ,'DBR' 
         ,'2'
         ,'Looks like {0} has a birthday coming up, make it a special one with  <a href="url">Bark Shop</a>.'           
-        ,'dog_name|dog_age'    
+        ,'dog_name|curr_age'    
         ,'{0}''s Birthday'          
         ,  'dog_name'      )
-        ,(2 
-        ,'Admin|CRA|ZenDesk|MLPE' 
-        ,'All' 
+        ,('Admin|CRA|ZenDesk|MLPE' 
+        ,'bright|classic|sc|eats' 
         ,'DBR' 
         ,'0|1'
         ,'Looks like {0} has a birthday coming up in {1} day(s). Be sure to wish him a happy {2}!'           
-        ,'dog_name|days_till_birthday|dog_age'    
+        ,'dog_name|days_till_birthday|curr_age'    
         ,'{0}''s Birthday'          
         ,  'dog_name'      )
         
-, (3
-        ,'BarkPost|BarkRails|MLPE|MNA|Simon|VWO'
-        ,'all' 
+, ('BarkPost|BarkRails|MLPE|MNA|Simon|VWO'
+        ,'bright|classic|sc|eats' 
         ,'SDW' 
         ,'1|0'
         ,'{0}''s scubscription will expire in {1} day(s). Renew Now'              
         ,'dog_name|days_till_expiration'    
         ,'Subscription Expiring Soon'          
         ,''            ),
-        (3
-        ,'Admin|CRA|ZenDesk|MLPE' 
-        ,'all' 
+        ('Admin|CRA|ZenDesk|MLPE' 
+        ,'bright|classic|sc|eats' 
         ,'SDW' 
         ,'1|0'
         ,'{0}''s scubscription will expire in {1} day(s). Ask if they plan to renew'              
@@ -350,13 +358,51 @@ VALUES /*customer vaiant*/
         ,'' )
 
 
-/* SELECT * FROM collinw.treatment_details  */
 
-INSERT INTO collinw.current_treatments (        
-        ,treatment_Id                  
-        ,product                       
-        ,source_system                 
-        ,variant                       
-        ,id                            
-        ,id_type                       
-);
+/*Functions */
+
+/*
+select * from pg_proc where proname ilike '%f_sql_greater%'
+
+create function collinw.udf_tes(float, float)
+  returns float
+stable
+as $$
+  select case when $1 > $2 then $1
+    else $2
+  end
+$$ language sql;*/
+
+
+/*Procedures*/
+
+CREATE OR REPLACE PROCEDURE usp_LogLoad(
+         source_table varchar(255)
+         , dest_table varchar(255)
+        )
+AS $$
+BEGIN
+       
+INSERT INTO collinw.load_log  (  
+source_table    
+,dest_table      
+,successful  /*    
+,ErrorNumber     
+,ErrorSeverity   
+,ErrorState      
+,ErrorProcedure  
+,ErrorLine       
+,ErrorMessage */   
+)
+        SELECT      
+        source_table    
+        ,dest_table      
+        ,successful   /*,
+          ERROR_NUMBER() AS ErrorNumber  
+    ,ERROR_SEVERITY() AS ErrorSeverity  
+    ,ERROR_STATE() AS ErrorState  
+    ,ERROR_PROCEDURE() AS ErrorProcedure  
+    ,ERROR_LINE() AS ErrorLine  
+    ,SQLERRM AS ErrorMessage */
+END;
+$$ LANGUAGE plpgsql;

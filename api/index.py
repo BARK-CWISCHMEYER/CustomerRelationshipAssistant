@@ -49,13 +49,13 @@ app = Flask(__name__)
 #@app.route('/treatments', defaults={'id': 0 , 'id_type': 'customer' , 'product': 'All' , 'source_system': 'All'}) ## need to validate inputs for id <> 0 unless this
 #@app.route('/treatments/<id>/<id_type>', defaults={'product': 'All' , 'source_system': 'All'})
 #@app.route('/treatments/<id>/<id_type>/<source_system>', defaults={'product': 'All'})
-#@app.route('/treatments/<id>/<id_type>/<source_system>/<product>')
+@app.route('/treatments/<id>/<id_type>/<source_system>/<product>')
 @app.route('/treatments')
-def get_treatments():#(product,source_system, id, id_type):
+def get_treatments(product,source_system, id, id_type):
   # if(id==0):
   #   df  = sql_to_pandas(get_all_current_treatments ).to_json(orient="split")
   # else:
-  df  = sql_to_pandas("CALL collinw.usp_gettreatments(62310,'dog','BarkRails','eats',0);").to_json(orient="split")
+  df  = sql_to_pandas("CALL collinw.usp_gettreatments(" + id + ",'" + id_type + "','" + source_system + "','"+product +"',0);").to_json(orient="split").replace("\\", '')
   return df
 
 

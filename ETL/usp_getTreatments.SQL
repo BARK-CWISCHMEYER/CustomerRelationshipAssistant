@@ -60,4 +60,6 @@ $$ LANGUAGE plpgsql;
 
 CALL collinw.usp_gettreatments(62310,'dog','BarkRails','eats',0);
 
+SELECT *
+FROM collinw.current_treatments
 

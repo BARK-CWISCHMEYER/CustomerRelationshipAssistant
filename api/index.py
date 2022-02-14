@@ -8,11 +8,11 @@ from barkutils.sql.sql_conns import get_redshift_dw_conn, sql_to_pandas
 
 from flask import Flask, jsonify, request
 
-#from .models.entity import Session, engine, Base
-#from .models.treatment import Treatment
+from .models.entity import Session, engine, Base
+#from .models.treatment import Treatment, TreatmentSchema
 
 app = Flask(__name__)
-
+CORS(app)
 # @app.route("/")
 # def hello_world():
 #   return "Hello, World!"
@@ -58,7 +58,17 @@ def get_treatments(product,source_system, id, id_type):
   # if(id==0):
   #   df  = sql_to_pandas(get_all_current_treatments ).to_json(orient="split")
   # else:
-  df  = sql_to_pandas("CALL collinw.usp_gettreatments(" + id + ",'" + id_type + "','" + source_system + "','"+product +"',0);").to_json(orient="split").replace("\\", '')
+  df  = sql_to_pandas("CALL collinw.usp_gettreatments(" + id + ",'" + id_type + "','" + source_system + "','"+product +"',0);")
+  print(df)
+  df =    df.to_json(orient="split").replace("\\", '')
+  print(df)
+
+  schema = ExamSchema(many=True)
+
+  
+
+
+  print(df)
   return df
 
 

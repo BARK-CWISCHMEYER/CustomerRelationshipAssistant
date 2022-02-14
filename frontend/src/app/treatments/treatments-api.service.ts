@@ -14,7 +14,9 @@ export class TreatmentsApiService {
 
   // GET list of public, future events
   getTreatments(): Observable<Treatment[]> {
-    return this.http.get<Treatment[]>(`${API_URL}/treatments`);
+    return this.http.get<Treatment[]>(
+      `${API_URL}treatments/106116/dog/MLPE/bright`
+    );
     /*.pipe(catchError(this._handleError))*/
   }
 }

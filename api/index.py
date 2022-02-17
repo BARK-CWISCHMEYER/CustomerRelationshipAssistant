@@ -8,7 +8,7 @@ from barkutils.sql.sql_conns import get_redshift_dw_conn, sql_to_pandas
 
 from flask import Flask, jsonify, request
 
-from .models.entity import Session, engine, Base
+#from .models.entity import Session, engine, Base
 #from .models.treatment import Treatment, TreatmentSchema
 
 app = Flask(__name__)
@@ -46,7 +46,6 @@ CORS(app)
 #       }
 #   } 
 # ]
-
 #Gets treatments given the input
 
 #@app.route('/treatments', defaults={'id': 0 , 'id_type': 'customer' , 'product': 'All' , 'source_system': 'All'}) ## need to validate inputs for id <> 0 unless this

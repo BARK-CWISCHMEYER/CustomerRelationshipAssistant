@@ -12,7 +12,7 @@ from barkutils.sql.sql_conns import get_redshift_dw_conn
 connection_name='redshift'
 username='cwischmeyer'
 #password=<yourpassword>
-password='8sY7mtg*NmGu4szx6TN67Xo.zQCXgbaV'
+password=''
 host='barkdata.cfxqnef7y3ju.us-east-1.redshift.amazonaws.com'
 port=5439
 dbname='barkdata'

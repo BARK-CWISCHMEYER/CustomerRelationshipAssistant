@@ -9,12 +9,12 @@ class Treatment(Entity, Base):
     __tablename__ = 'collinw.current_treatments'
 
     treatment_code = Column(String)
-    product = Column(String)
+    product = Column(String)ß
     source_system = Column(String)
     variant = Column(Integer)
     _id = Column(Integer)
     id_type = Column(String)
-    treatment_tßt = Column(String)
+    treatment_text = Column(String)
     treatment_title = Column(String)
 
     def __init__(self, treatment_code, product, source_system, variant,

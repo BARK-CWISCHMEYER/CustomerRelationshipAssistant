@@ -4,8 +4,13 @@
         What is this?
                 This is the table creation file for a system to assign messaging experiences to our customers. 
 
-                The idea is that ETL jobs run and dump target populations into tables. This is based off of busienss logic that determines they meet the 
-                criteria for a given messaging campaign. These tables would then tell all of our applications who to display a given message. 
+                The idea is that ETL jobs run and dump target populations into tables. These populations are based off of busienss logic 
+                that determines the customers meet the criteria for a given messaging campaign. 
+                
+                These tables would then be the source of truth for all of our applications who to display a given message.
+
+                Changes to the tables will then immediately be reflected in end applications, 
+                whether it be changes to text, campaign populations or event A/B test assignments
                   
         Benefits
                Enables A/B splits on populations and easy test participant data pulls

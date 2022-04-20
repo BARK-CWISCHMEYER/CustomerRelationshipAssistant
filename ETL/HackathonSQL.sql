@@ -1,6 +1,10 @@
 /*CREATE SCHEMA collinw */
 
 /*
+        What is this?
+                This is the table creation file for a system to assign marketing experiences to our customers.
+
+
         Sales Pitch:
 
                 We want to be our customer's one-stop-shop for pet care needs. We can't do this if our customers are seeing various

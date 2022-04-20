@@ -2,7 +2,10 @@
 
 /*
         What is this?
-                This is the table creation file for a system to assign marketing experiences to our customers.
+                This is the table creation file for a system to assign messaging experiences to our customers. 
+
+                The idea is that ETL jobs run and dump target populations into tables. This is based off of busienss logic that determines they meet the 
+                criteria for a given messaging campaign
 
 
         Sales Pitch:

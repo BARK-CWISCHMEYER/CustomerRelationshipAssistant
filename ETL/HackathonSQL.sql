@@ -5,9 +5,15 @@
                 This is the table creation file for a system to assign messaging experiences to our customers. 
 
                 The idea is that ETL jobs run and dump target populations into tables. This is based off of busienss logic that determines they meet the 
-                criteria for a given messaging campaign
-
-
+                criteria for a given messaging campaign. These tables would then tell all of our applications who to display a given message. 
+                  
+        Benefits
+               Enables A/B splits on populations and easy test participant data pulls
+               Enables for the quick addition of new messaging campaings
+               Tracking which customers were in given campaigns historically is a breeze
+               Being able to alter who is in campaigns on the fly is as well
+               Allows for multiple systems to have the same test assignment information 
+              
         Sales Pitch:
 
                 We want to be our customer's one-stop-shop for pet care needs. We can't do this if our customers are seeing various
